@@ -1,7 +1,11 @@
 module Task1 where
 
 import Data.Functor
-import Data.List
+import Data.List (group)
+import Control.Arrow
+
+l :: [a] -> Int
+l = length
 
 -- | Compresses given data using run-length encoding.
 --
@@ -14,7 +18,7 @@ import Data.List
 -- >>> encode []
 -- []
 encode :: (Eq a) => [a] -> [(Int, a)]
-encode = (<&> \x -> (length x, head x)) . group
+encode = (<&> l &&& head) . group
 
 -- | Decompresses given data using run-length decoding.
 --
@@ -46,7 +50,5 @@ decode = (>>= \(c, e) -> e <$ [1 .. c])
 -- >>> rotate 5 ""
 -- ""
 rotate :: Int -> [a] -> [a]
-rotate = f
-  where
-    f _ [] = []
-    f k l = (drop <> take) (mod k . length $ l) l
+rotate _ [] = []
+rotate n s = (drop <> take) (mod n . l $ s) s
