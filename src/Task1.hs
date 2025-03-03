@@ -1,5 +1,12 @@
 module Task1 where
 
+import Data.Functor
+import Data.List (group)
+import Control.Arrow
+
+l :: [a] -> Int
+l = length
+
 -- | Compresses given data using run-length encoding.
 --
 -- Usage example:
@@ -10,9 +17,8 @@ module Task1 where
 -- [(1,'a'),(1,'b'),(1,'c')]
 -- >>> encode []
 -- []
---
-encode :: Eq a => [a] -> [(Int, a)]
-encode = error "TODO: define encode"
+encode :: (Eq a) => [a] -> [(Int, a)]
+encode = (<&> l &&& head) . group
 
 -- | Decompresses given data using run-length decoding.
 --
@@ -24,9 +30,8 @@ encode = error "TODO: define encode"
 -- "abc"
 -- >>> decode []
 -- []
---
 decode :: [(Int, a)] -> [a]
-decode = error "TODO: define decode"
+decode = (>>= \(c, e) -> e <$ [1 .. c])
 
 -- | Rotates given finite list to the left for a given amount N
 --
@@ -44,6 +49,6 @@ decode = error "TODO: define decode"
 -- "cab"
 -- >>> rotate 5 ""
 -- ""
---
 rotate :: Int -> [a] -> [a]
-rotate = error "TODO: define rotate"
+rotate _ [] = []
+rotate n s = (drop <> take) (mod n . l $ s) s
