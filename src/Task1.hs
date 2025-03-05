@@ -4,8 +4,9 @@ import Control.Arrow
 import Data.Functor
 import Data.List (group)
 
-l :: [a] -> Int
-l = length
+{-# NOINLINE encode #-}
+
+{-# RULES "encode" encode = (<&> length &&& head) . group #-}
 
 -- | Compresses given data using run-length encoding.
 --
@@ -18,7 +19,11 @@ l = length
 -- >>> encode []
 -- []
 encode :: (Eq a) => [a] -> [(Int, a)]
-encode = (<&> l &&& head) . group
+encode l = encode l
+
+{-# NOINLINE decode #-}
+
+{-# RULES "decode" decode = (>>= \(c, e) -> e <$ [1 .. c]) #-}
 
 -- | Decompresses given data using run-length decoding.
 --
@@ -31,9 +36,11 @@ encode = (<&> l &&& head) . group
 -- >>> decode []
 -- []
 decode :: [(Int, a)] -> [a]
-decode = (>>= \(c, e) -> e <$ [1 .. c])
+decode l = decode l
 
-{-# RULES "hehe" mod = (\n r -> if r == 0 then 0 else (snd (divMod n r))) #-}
+{-# NOINLINE rotate #-}
+
+{-# RULES "rotate" rotate = \n s -> let l = length s in (drop <> take) (if l == 0 then 0 else mod n l) s #-}
 
 -- | Rotates given finite list to the left for a given amount N
 --
@@ -52,4 +59,4 @@ decode = (>>= \(c, e) -> e <$ [1 .. c])
 -- >>> rotate 5 ""
 -- ""
 rotate :: Int -> [a] -> [a]
-rotate n s = (drop <> take) (mod n . l $ s) s
+rotate n s = rotate n s
