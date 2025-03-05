@@ -59,4 +59,4 @@ decode l = decode l
 -- >>> rotate 5 ""
 -- ""
 rotate :: Int -> [a] -> [a]
-rotate n s = rotate n s
+rotate n = rotate n
