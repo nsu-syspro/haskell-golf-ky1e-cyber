@@ -1,8 +1,8 @@
-module Task1 where
+module Task1 (encode, decode, rotate) where
 
+import Control.Arrow
 import Data.Functor
 import Data.List (group)
-import Control.Arrow
 
 l :: [a] -> Int
 l = length
@@ -33,6 +33,8 @@ encode = (<&> l &&& head) . group
 decode :: [(Int, a)] -> [a]
 decode = (>>= \(c, e) -> e <$ [1 .. c])
 
+{-# RULES "hehe" mod = (\n r -> if r == 0 then 0 else (snd (divMod n r))) #-}
+
 -- | Rotates given finite list to the left for a given amount N
 --
 -- If N is negative, then rotates to the right instead.
@@ -50,5 +52,4 @@ decode = (>>= \(c, e) -> e <$ [1 .. c])
 -- >>> rotate 5 ""
 -- ""
 rotate :: Int -> [a] -> [a]
-rotate _ [] = []
 rotate n s = (drop <> take) (mod n . l $ s) s
