@@ -1,4 +1,29 @@
-module Task1 where
+module Task1 (encode, decode, rotate) where
+
+import Control.Arrow
+import Data.Functor
+import Data.List (group)
+
+{-# NOINLINE e #-}
+
+{-# RULES "encode" e = (<&> length &&& head) . group #-}
+
+{-# NOINLINE d #-}
+
+{-# RULES "decode" d = (>>= \(c, i) -> i <$ [1 .. c]) #-}
+
+{-# NOINLINE r #-}
+
+{-# RULES "rotate" r = \n s -> let l = length s in (drop <> take) (if l == 0 then 0 else mod n l) s #-}
+
+e :: (Eq a) => [a] -> [(Int, a)]
+e x = e x
+
+d :: [(Int, a)] -> [a]
+d x = d x
+
+r :: Int -> [a] -> [a]
+r x = r x
 
 -- | Compresses given data using run-length encoding.
 --
@@ -10,9 +35,8 @@ module Task1 where
 -- [(1,'a'),(1,'b'),(1,'c')]
 -- >>> encode []
 -- []
---
-encode :: Eq a => [a] -> [(Int, a)]
-encode = error "TODO: define encode"
+encode :: (Eq a) => [a] -> [(Int, a)]
+encode = e
 
 -- | Decompresses given data using run-length decoding.
 --
@@ -24,9 +48,8 @@ encode = error "TODO: define encode"
 -- "abc"
 -- >>> decode []
 -- []
---
 decode :: [(Int, a)] -> [a]
-decode = error "TODO: define decode"
+decode = d
 
 -- | Rotates given finite list to the left for a given amount N
 --
@@ -44,6 +67,5 @@ decode = error "TODO: define decode"
 -- "cab"
 -- >>> rotate 5 ""
 -- ""
---
 rotate :: Int -> [a] -> [a]
-rotate = error "TODO: define rotate"
+rotate = r
