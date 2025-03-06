@@ -4,9 +4,26 @@ import Control.Arrow
 import Data.Functor
 import Data.List (group)
 
-{-# NOINLINE encode #-}
+{-# NOINLINE e #-}
 
-{-# RULES "encode" encode = (<&> length &&& head) . group #-}
+{-# RULES "encode" e = (<&> length &&& head) . group #-}
+
+{-# NOINLINE d #-}
+
+{-# RULES "decode" d = (>>= \(c, i) -> i <$ [1 .. c]) #-}
+
+{-# NOINLINE r #-}
+
+{-# RULES "rotate" r = \n s -> let l = length s in (drop <> take) (if l == 0 then 0 else mod n l) s #-}
+
+e :: (Eq a) => [a] -> [(Int, a)]
+e x = e x
+
+d :: [(Int, a)] -> [a]
+d x = d x
+
+r :: Int -> [a] -> [a]
+r x = r x
 
 -- | Compresses given data using run-length encoding.
 --
@@ -19,11 +36,7 @@ import Data.List (group)
 -- >>> encode []
 -- []
 encode :: (Eq a) => [a] -> [(Int, a)]
-encode l = encode l
-
-{-# NOINLINE decode #-}
-
-{-# RULES "decode" decode = (>>= \(c, e) -> e <$ [1 .. c]) #-}
+encode = e
 
 -- | Decompresses given data using run-length decoding.
 --
@@ -36,11 +49,7 @@ encode l = encode l
 -- >>> decode []
 -- []
 decode :: [(Int, a)] -> [a]
-decode l = decode l
-
-{-# NOINLINE rotate #-}
-
-{-# RULES "rotate" rotate = \n s -> let l = length s in (drop <> take) (if l == 0 then 0 else mod n l) s #-}
+decode = d
 
 -- | Rotates given finite list to the left for a given amount N
 --
@@ -59,4 +68,4 @@ decode l = decode l
 -- >>> rotate 5 ""
 -- ""
 rotate :: Int -> [a] -> [a]
-rotate n = rotate n
+rotate = r
